@@ -201,7 +201,7 @@ public class Main {
 
     //stampa la palude formattata (STRING)
     public static void printPaludeStr(String[][] palude) {
-        System.out.println("Soluzione:");
+        System.out.println("\nSoluzione:");
         for (int i = 0; i < palude.length; i++) {
             for (int j = 0; j < palude[0].length; j++) {
                 System.out.print(palude[i][j] + "  ");
@@ -212,7 +212,7 @@ public class Main {
 
     //stampa il percorso trovato
     public static void printPath(ArrayList<Integer> path) {
-        System.out.println("Percorso trovato (x;y):");
+        System.out.println("\nPercorso trovato (x;y):");
 
         //parto dal fondo dato che il percorso viene creato al contrario
         for (int i = path.size() - 1; i > 0; i -= 2) {
