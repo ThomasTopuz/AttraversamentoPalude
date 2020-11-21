@@ -7,46 +7,58 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
-        //feature branch
+        int altezza = 0;
+        int larghezza = 0;
         do {
+            //input
             System.out.println("Inserisci l'altezza della palude:");
-            int altezza = sc.nextInt();
+            altezza = sc.nextInt();
             System.out.println("Inserisci la larghezza della palude:");
-            int larghezza = sc.nextInt();
+            larghezza = sc.nextInt();
 
-            int[][] maze = generatePalude(altezza, larghezza);
+            //validazione dei dati inseriti
+            while (!(altezza > 0 && larghezza > 0)) {
+                System.out.println("Errore! - Altezza e larghezza devono essere maggiori di 0!");
+
+                System.out.println("Inserisci l'altezza della palude:");
+                altezza = sc.nextInt();
+                System.out.println("Inserisci la larghezza della palude:");
+                larghezza = sc.nextInt();
+            }
+
+            int[][] palude = generatePalude(altezza, larghezza);
             ArrayList<Integer> path = new ArrayList<>();
-            printPaludeInt(maze);
+            printPaludeInt(palude);
 
-            //pathfinding
-            for (int i = 0; i < maze[0].length; i++) {
-                path.clear();
+            //scorro la prima colonna per trovare un attraversamento
+            for (int i = 0; i < palude[0].length; i++) {
                 ArrayList<Integer> shortestPath = new ArrayList<>();
-                searchPath(maze, 0, i, path);
+                searchPath(palude, 0, i, path);
                 if (path.size() > 1) {
-                    break;
+                    break; //se è stato trovato un percorso, esco dal ciclo
                 }
             }
 
             //output
             if (path.size() > 0) {
                 printPath(path);
-                printPaludeStr(drawPath(maze, path));
+                printPaludeStr(drawPath(palude, path));
             } else {
                 System.out.println("Non è stato possibile trovare un percorso per questa palude :(");
             }
 
+            //reinizializzare il programma
             System.out.println("Riprovare? {s} {n}");
         } while (sc.next().equals("s"));
 
         System.out.println("Programma terminato!");
     }
 
-    //LOGIC
+    //metodo che genera la palude
     public static int[][] generatePalude(int larghezza, int altezza) {
         Random random = new Random();
         int[][] palude = new int[larghezza][altezza];
-        double ones = ((double) larghezza * (double) altezza / 100) * 65; //quanti uno devo inserire (il 75%)
+        double ones = ((double) larghezza * (double) altezza / 100) * 65; //quanti uno devo inserire (circa il 65%)
 
         for (int i = 0; i < ones; ) {
             int x = random.nextInt(altezza);
@@ -59,8 +71,10 @@ public class Main {
         return palude;
     }
 
+    //metodo ricorsivo che trova un percorso
     public static boolean searchPath(int[][] palude, int x, int y, ArrayList<Integer> path) {
 
+        // validazione x e y per evitare un outofbound
         if (x < 0 || x >= palude[0].length || y < 0 || y >= palude.length) {
             return false;
         }
@@ -72,14 +86,16 @@ public class Main {
             return true;
         }
 
-        //[y][x] è piu facile da visualizzare
+        //[y][x] è piu facile da visualizzare in fase di sviluppo
         if (palude[y][x] == 1) {
             palude[y][x] = 2; //per marcarlo
 
-            //destra
+            //dx = distanta orizzontale dy = distanza verticale
+
+            //a destra
             int dx = 1;
             int dy = 0;
-            if (searchPath(palude, x + dx, y + dy, path)) {
+            if (searchPath(palude, x + dx, y + dy, path)) { //ricorsione
                 path.add(x);
                 path.add(y);
                 return true;
@@ -103,7 +119,7 @@ public class Main {
                 return true;
             }
 
-            //sotto
+            //in basso
             dx = 0;
             dy = -1;
             if (searchPath(palude, x + dx, y + dy, path)) {
@@ -112,7 +128,7 @@ public class Main {
                 return true;
             }
 
-            //sopra
+            //in alto
             dx = 0;
             dy = 1;
             if (searchPath(palude, x + dx, y + dy, path)) {
@@ -139,7 +155,7 @@ public class Main {
                 return true;
             }
 
-            //sinistra
+            //a sinistra
             dx = -1;
             dy = 0;
             if (searchPath(palude, x + dx, y + dy, path)) {
@@ -151,6 +167,7 @@ public class Main {
         return false;
     }
 
+    //metodo che disegna il percorso con gli asterischi
     public static String[][] drawPath(int[][] palude, ArrayList<Integer> path) {
         for (int i = 0; i < path.size(); i += 2) {
             palude[path.get(i + 1)][path.get(i)] = 3;
@@ -171,7 +188,7 @@ public class Main {
         return strMaze;
     }
 
-    //OUTPUT
+    //stampa la palude formattata (INT)
     public static void printPaludeInt(int[][] palude) {
         System.out.println("Palude generata:");
         for (int i = 0; i < palude.length; i++) {
@@ -182,6 +199,7 @@ public class Main {
         }
     }
 
+    //stampa la palude formattata (STRING)
     public static void printPaludeStr(String[][] palude) {
         System.out.println("Soluzione:");
         for (int i = 0; i < palude.length; i++) {
@@ -192,9 +210,11 @@ public class Main {
         }
     }
 
+    //stampa il percorso trovato
     public static void printPath(ArrayList<Integer> path) {
-        //print path
         System.out.println("Percorso trovato (x;y):");
+
+        //parto dal fondo dato che il percorso viene creato al contrario
         for (int i = path.size() - 1; i > 0; i -= 2) {
             System.out.print("(" + path.get(i - 1) + ";" + path.get(i) + ")" + (i == 1 ? "\n" : " --> "));
         }
