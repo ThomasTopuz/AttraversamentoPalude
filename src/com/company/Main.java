@@ -90,7 +90,7 @@ public class Main {
         if (palude[y][x] == 1) {
             palude[y][x] = 2; //per marcarlo
 
-            //dx = distanta orizzontale dy = distanza verticale
+            //dx = distanza orizzontale dy = distanza verticale
 
             //a destra
             int dx = 1;
