@@ -7,58 +7,58 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
-        int altezza = 0;
-        int larghezza = 0;
+        int height = 0;
+        int width = 0;
         do {
-            //input
-            System.out.println("Inserisci l'altezza della palude:");
-            altezza = sc.nextInt();
-            System.out.println("Inserisci la larghezza della palude:");
-            larghezza = sc.nextInt();
+            // input
+            System.out.println("Insert the swamp's height.");
+            height = sc.nextInt();
+            System.out.println("Insert the swap's width.");
+            width = sc.nextInt();
 
-            //validazione dei dati inseriti
-            while (!(altezza > 0 && larghezza > 0)) {
-                System.out.println("Errore! - Altezza e larghezza devono essere maggiori di 0!");
+            // data validation
+            while (!(height > 0 && width > 0)) {
+                System.out.println("ERROR! - width and height must be greater than 1.");
 
-                System.out.println("Inserisci l'altezza della palude:");
-                altezza = sc.nextInt();
-                System.out.println("Inserisci la larghezza della palude:");
-                larghezza = sc.nextInt();
+                System.out.println("Insert the swamp's height.");
+                height = sc.nextInt();
+                System.out.println("Insert the swap's width.");
+                width = sc.nextInt();
             }
 
-            int[][] palude = generatePalude(altezza, larghezza);
+            int[][] palude = generateSwamp(height, width);
             ArrayList<Integer> path = new ArrayList<>();
-            printPaludeInt(palude);
+            printSwampInt(palude);
 
-            //scorro la prima colonna per trovare un attraversamento
+            // traverse the fist column to search a path
             for (int i = 0; i < palude[0].length; i++) {
                 ArrayList<Integer> shortestPath = new ArrayList<>();
                 searchPath(palude, 0, i, path);
                 if (path.size() > 1) {
-                    break; //se è stato trovato un percorso, esco dal ciclo
+                    break; //if path is found
                 }
             }
 
-            //output
+            // output
             if (path.size() > 0) {
                 printPath(path);
-                printPaludeStr(drawPath(palude, path));
+                printSwampStr(drawPath(palude, path));
             } else {
-                System.out.println("Non è stato possibile trovare un percorso per questa palude :(");
+                System.out.println("No path found for the generated swamp :(");
             }
 
-            //reinizializzare il programma
-            System.out.println("Riprovare? {s} {n}");
-        } while (sc.next().equals("s"));
+            // try again
+            System.out.println("Try again? {y} {n}");
+        } while (sc.next().equals("y"));
 
-        System.out.println("Programma terminato!");
+        System.out.println("Process ended!");
     }
 
-    //metodo che genera la palude
-    public static int[][] generatePalude(int larghezza, int altezza) {
+    // randomly generate the binary swamp
+    public static int[][] generateSwamp(int larghezza, int altezza) {
         Random random = new Random();
         int[][] palude = new int[larghezza][altezza];
-        double ones = ((double) larghezza * (double) altezza / 100) * 65; //quanti uno devo inserire (circa il 65%)
+        double ones = ((double) larghezza * (double) altezza / 100) * 65; //ones percentile (65%)
 
         for (int i = 0; i < ones; ) {
             int x = random.nextInt(altezza);
@@ -71,12 +71,13 @@ public class Main {
         return palude;
     }
 
-    //metodo ricorsivo che trova un percorso
+    // recursive DFS implementation for finding a path from a point to another
     public static boolean searchPath(int[][] palude, int x, int y, ArrayList<Integer> path) {
 
         // validazione x e y per evitare un outofbound
         if (x < 0 || x >= palude[0].length || y < 0 || y >= palude.length) {
-            return false;
+            	System.out.print(2);
+		return false;
         }
 
         //arrivato alla fine della palude
@@ -167,7 +168,7 @@ public class Main {
         return false;
     }
 
-    //metodo che disegna il percorso con gli asterischi
+    // draw the found path in the swamp using "*"
     public static String[][] drawPath(int[][] palude, ArrayList<Integer> path) {
         for (int i = 0; i < path.size(); i += 2) {
             palude[path.get(i + 1)][path.get(i)] = 3;
@@ -188,9 +189,9 @@ public class Main {
         return strMaze;
     }
 
-    //stampa la palude formattata (INT)
-    public static void printPaludeInt(int[][] palude) {
-        System.out.println("Palude generata:");
+    // print the formatted swamp (INT)
+    public static void printSwampInt(int[][] palude) {
+        System.out.println("Generated swamp:");
         for (int i = 0; i < palude.length; i++) {
             for (int j = 0; j < palude[0].length; j++) {
                 System.out.print(palude[i][j] + "  ");
@@ -199,9 +200,9 @@ public class Main {
         }
     }
 
-    //stampa la palude formattata (STRING)
-    public static void printPaludeStr(String[][] palude) {
-        System.out.println("\nSoluzione:");
+    // print the formatted swamp(STRING)
+    public static void printSwampStr(String[][] palude) {
+        System.out.println("\nSolution:");
         for (int i = 0; i < palude.length; i++) {
             for (int j = 0; j < palude[0].length; j++) {
                 System.out.print(palude[i][j] + "  ");
@@ -210,11 +211,11 @@ public class Main {
         }
     }
 
-    //stampa il percorso trovato
+    // print the path found (x,y)->(x1,y1)...
     public static void printPath(ArrayList<Integer> path) {
-        System.out.println("\nPercorso trovato (x;y):");
+        System.out.println("\nPath: (x;y):");
 
-        //parto dal fondo dato che il percorso viene creato al contrario
+        // start from end because DFS implementation populate the path array from the end
         for (int i = path.size() - 1; i > 0; i -= 2) {
             System.out.print("(" + path.get(i - 1) + ";" + path.get(i) + ")" + (i == 1 ? "\n" : " --> "));
         }
